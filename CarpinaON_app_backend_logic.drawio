@@ -1,0 +1,323 @@
+<mxfile host="app.diagrams.net" agent="draw.io" pages="4">
+  <diagram id="page1" name="Arquitetura Backend">
+    <mxGraphModel dx="1212" dy="660" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="p1_client" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" value="Cliente (App)" vertex="1">
+          <mxGeometry height="60" width="220" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_admin_client" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" value="Admin (Prefeitura)" vertex="1">
+          <mxGeometry height="60" width="220" x="900" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_gateway" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" value="API (Spring Boot)" vertex="1">
+          <mxGeometry height="60" width="340" x="340" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_auth" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" value="Auth (JWT)" vertex="1">
+          <mxGeometry height="70" width="220" x="40" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_catalogo" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" value="Catálogo (Categorias/Serviços)" vertex="1">
+          <mxGeometry height="70" width="220" x="300" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_solic" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" value="Solicitações" vertex="1">
+          <mxGeometry height="70" width="220" x="560" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_notif" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" value="Notificações" vertex="1">
+          <mxGeometry height="70" width="220" x="820" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_turismo" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" value="Turismo/Eventos" vertex="1">
+          <mxGeometry height="70" width="220" x="300" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_perfil" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" value="Perfil" vertex="1">
+          <mxGeometry height="70" width="220" x="40" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_db" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1;boundedLbl=1;" value="PostgreSQL" vertex="1">
+          <mxGeometry height="70" width="260" x="460" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_viacep" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;dashed=1;" value="ViaCEP" vertex="1">
+          <mxGeometry height="60" width="220" x="40" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_storage" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;dashed=1;" value="Storage (anexos)" vertex="1">
+          <mxGeometry height="60" width="220" x="760" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_fcm" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;dashed=1;" value="FCM (Push)" vertex="1">
+          <mxGeometry height="60" width="220" x="1000" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e0" edge="1" parent="1" source="p1_client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_gateway" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e1" edge="1" parent="1" source="p1_admin_client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_gateway" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e2" edge="1" parent="1" source="p1_gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_auth" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e3" edge="1" parent="1" source="p1_gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_catalogo" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e4" edge="1" parent="1" source="p1_gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_solic" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e5" edge="1" parent="1" source="p1_gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_notif" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e6" edge="1" parent="1" source="p1_gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_turismo" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e7" edge="1" parent="1" source="p1_gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_perfil" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e8" edge="1" parent="1" source="p1_auth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_db" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e9" edge="1" parent="1" source="p1_catalogo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_db" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e10" edge="1" parent="1" source="p1_solic" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_db" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e11" edge="1" parent="1" source="p1_notif" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_db" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e12" edge="1" parent="1" source="p1_turismo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_db" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e13" edge="1" parent="1" source="p1_perfil" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_db" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e14" edge="1" parent="1" source="p1_solic" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_viacep" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;valida CEP&lt;/font&gt;">
+          <mxGeometry relative="1" x="-0.1181" y="-5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p1_e15" edge="1" parent="1" source="p1_solic" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_storage" value="upload evidências">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_e16" edge="1" parent="1" source="p1_notif" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="p1_fcm" value="envia push">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="page2" name="Modelo de Dados (ER)">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="usuario_t" value="USUARIO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="usuario_b" value="PK  id      nome      cpf (único)      email      telefone      status_verificacao      created_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="categoria_t" value="CATEGORIA" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;align=center;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="categoria_b" value="PK  id      nome      descricao      icone      cor" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="340" y="70" width="220" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="servico_t" value="SERVICO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;align=center;" vertex="1" parent="1">
+          <mxGeometry x="640" y="40" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="servico_b" value="PK  id FK  categoria_id      nome      descricao      quando_usar      nao_usar_para      requer_endereco (bool)      ativo (bool)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="640" y="70" width="240" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="solicitacao_t" value="SOLICITACAO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;align=center;" vertex="1" parent="1">
+          <mxGeometry x="960" y="40" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="solicitacao_b" value="PK  id      protocolo (único, ex: 2026-9A4B) FK  usuario_id FK  servico_id      status      cep      endereco      complemento      ponto_referencia      descricao      created_at      updated_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="960" y="70" width="260" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="anexo_t" value="ANEXO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="40" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="anexo_b" value="PK  id FK  solicitacao_id      url_arquivo      tipo_mime      created_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="70" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="historico_t" value="HISTORICO_STATUS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;align=center;" vertex="1" parent="1">
+          <mxGeometry x="960" y="340" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="historico_b" value="PK  id FK  solicitacao_id      status_anterior      status_novo      observacao      changed_by (usuario/admin)      changed_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="960" y="370" width="260" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="notificacao_t" value="NOTIFICACAO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="notificacao_b" value="PK  id FK  usuario_id      titulo      mensagem      lida (bool)      created_at" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="290" width="220" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="evento_t" value="EVENTO_TURISMO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;align=center;" vertex="1" parent="1">
+          <mxGeometry x="340" y="220" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="evento_b" value="PK  id      titulo      descricao      categoria      data_inicio      data_fim      local" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;spacingLeft=6;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="340" y="250" width="240" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_e0" value="1..N" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;fontSize=11;" edge="1" parent="1" source="categoria_b" target="servico_b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_e1" value="1..N" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;fontSize=11;" edge="1" parent="1" source="usuario_b" target="solicitacao_b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_e2" value="1..N" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;fontSize=11;" edge="1" parent="1" source="servico_b" target="solicitacao_b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_e3" value="1..N" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;fontSize=11;" edge="1" parent="1" source="solicitacao_b" target="anexo_b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_e4" value="1..N" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;fontSize=11;" edge="1" parent="1" source="solicitacao_b" target="historico_b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_e5" value="1..N" style="edgeStyle=entityRelationEdgeStyle;html=1;endArrow=ERmany;startArrow=ERone;fontSize=11;" edge="1" parent="1" source="usuario_b" target="notificacao_b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_note" value="Obs: protocolo é tipo 2026-9A4B, gera automático quando cria a solicitação. histórico_status salva toda vez que muda o status (pra saber quem mudou e quando). requer_endereco no serviço é pra saber se precisa de CEP ou não." style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="520" width="940" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="page3" name="Fluxo de Status da Solicitação">
+    <mxGraphModel dx="710" dy="387" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="s_recebida" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" value="RECEBIDA (protocolo gerado)" vertex="1">
+          <mxGeometry height="70" width="200" x="60" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="s_analise" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" value="EM_ANALISE (triagem do setor)" vertex="1">
+          <mxGeometry height="70" width="200" x="340" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="s_andamento" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" value="EM_ANDAMENTO (equipe designada)" vertex="1">
+          <mxGeometry height="70" width="200" x="620" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="s_resolvida" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" value="RESOLVIDA" vertex="1">
+          <mxGeometry height="70" width="200" x="900" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="s_indeferida" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;" value="INDEFERIDA (motivo obrigatório)" vertex="1">
+          <mxGeometry height="70" width="200" x="900" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="s_cancelada" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;" value="CANCELADA (pelo cidadão)" vertex="1">
+          <mxGeometry height="70" width="200" x="60" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_e0" edge="1" parent="1" source="s_recebida" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="s_analise" value="triagem">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_e1" edge="1" parent="1" source="s_analise" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="s_andamento" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;aprovada p/ execução&lt;/font&gt;">
+          <mxGeometry relative="1" y="5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p3_e2" edge="1" parent="1" source="s_andamento" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="s_resolvida" value="serviço concluído">
+          <mxGeometry relative="1" x="-0.0204" y="15" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p3_e3" edge="1" parent="1" source="s_analise" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="s_indeferida" value="reprovada">
+          <mxGeometry relative="1" x="0.181" y="-15" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p3_e4" edge="1" parent="1" source="s_andamento" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="s_indeferida" value="inviável">
+          <mxGeometry relative="1" x="-0.0204" y="-15" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p3_e5" edge="1" parent="1" source="s_recebida" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;elbow=vertical;strokeColor=#666666;fontSize=11;" target="s_cancelada" value="cidadão cancela">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p3_note" parent="1" style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#666666;" value="Pra toda mudança de status: salva no histórico (quem mudou, quando) + manda notificação pro cidadão. Só admin pode mudar status, menos o cancelar que o cidadão faz. Não pode pular etapa (não pode ir de RECEBIDA direto pra RESOLVIDA por exemplo)." vertex="1">
+          <mxGeometry height="90" width="1040" x="60" y="480" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="page4" name="Fluxo: Nova Solicitação">
+    <mxGraphModel dx="1030" dy="561" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="actor_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" value="Cidadão (App)" vertex="1">
+          <mxGeometry height="40" width="220" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" value="API / Backend" vertex="1">
+          <mxGeometry height="40" width="220" x="40" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=12;" value="Serviços Externos" vertex="1">
+          <mxGeometry height="40" width="220" x="40" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;" value="Banco de Dados" vertex="1">
+          <mxGeometry height="40" width="220" x="40" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;" value="Admin (Prefeitura)" vertex="1">
+          <mxGeometry height="40" width="220" x="40" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="step_0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=4;" value="1. Cidadão escolhe categoria → serviço → preenche formulário (CEP, endereço, complemento, referência)" vertex="1">
+          <mxGeometry height="70" width="300" x="340" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="step_1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=4;" value="2. API recebe POST /solicitacoes valida token JWT do usuário" vertex="1">
+          <mxGeometry height="70" width="300" x="670" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="step_2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=4;" value="3. (opcional) API consulta ViaCEP para validar/completar endereço" vertex="1">
+          <mxGeometry height="70" width="300" x="1000" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="step_3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=4;" value="4. Grava SOLICITACAO (status=RECEBIDA) gera protocolo único (ANO-XXXX)" vertex="1">
+          <mxGeometry height="70" width="300" x="1330" y="385" as="geometry" />
+        </mxCell>
+        <mxCell id="step_4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=4;" value="5. API manda notificação &#39;Solicitação recebida - protocolo X&#39;" vertex="1">
+          <mxGeometry height="70" width="300" x="1660" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="step_5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=4;" value="6. App mostra protocolo ao cidadão (tela &#39;Meus Pedidos&#39;)" vertex="1">
+          <mxGeometry height="70" width="300" x="1990" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="step_6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=4;" value="7. Admin acessa fila de solicitações no backoffice, filtra por categoria/status" vertex="1">
+          <mxGeometry height="70" width="300" x="2320" y="505" as="geometry" />
+        </mxCell>
+        <mxCell id="step_7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=4;" value="8. Admin muda status via PATCH /solicitacoes/{id}/status" vertex="1">
+          <mxGeometry height="70" width="300" x="2650" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="step_8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=4;" value="9. API grava HISTORICO_STATUS e atualiza SOLICITACAO.status" vertex="1">
+          <mxGeometry height="70" width="300" x="2980" y="385" as="geometry" />
+        </mxCell>
+        <mxCell id="step_9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=4;" value="10. API manda notificação de mudança de status pro cidadão" vertex="1">
+          <mxGeometry height="70" width="300" x="3310" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="step_10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;spacingLeft=4;" value="11. Cidadão recebe push e vê status atualizado em &#39;Meus Pedidos&#39;" vertex="1">
+          <mxGeometry height="70" width="300" x="3640" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_e0" edge="1" parent="1" source="step_0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#666666;fontSize=10;" target="step_1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_e1" edge="1" parent="1" source="step_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#666666;fontSize=10;" target="step_2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_e2" edge="1" parent="1" source="step_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#666666;fontSize=10;" target="step_3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_e3" edge="1" parent="1" source="step_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#666666;fontSize=10;" target="step_4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_e4" edge="1" parent="1" source="step_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#666666;fontSize=10;" target="step_5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_e5" edge="1" parent="1" source="step_5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#666666;fontSize=10;" target="step_6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_e6" edge="1" parent="1" source="step_6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#666666;fontSize=10;" target="step_7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_e7" edge="1" parent="1" source="step_7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#666666;fontSize=10;" target="step_8" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_e8" edge="1" parent="1" source="step_8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#666666;fontSize=10;" target="step_9" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_e9" edge="1" parent="1" source="step_9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#666666;fontSize=10;" target="step_10" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p4_note" parent="1" style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#666666;" value="Passo 1 até 6 é o fluxo do cidadão criando a solicitação. Do 7 até 11 é o admin mudando o status. Usa o mesmo endpoint /solicitacoes, muda só o método e quem tá logado. Endpoints que será necessario usar: POST /solicitacoes | GET /solicitacoes (meus pedidos) | GET /solicitacoes/{protocolo} | PATCH /solicitacoes/{id}/status (admin) | GET /categorias | GET /categorias/{id}/servicos" vertex="1">
+          <mxGeometry height="110" width="3200" x="40" y="620" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
