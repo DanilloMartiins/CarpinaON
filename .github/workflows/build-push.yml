@@ -2,7 +2,7 @@ name: Build e Publica Imagem
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
     paths:
       - 'src/**'
       - 'pom.xml'
