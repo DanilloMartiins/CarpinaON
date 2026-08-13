@@ -24,6 +24,13 @@ public class Usuario {
 
     private String telefone;
 
+    // Número do Cartão Nacional de Saúde (opcional)
+    private String numeroCNS;
+
+    // Senha hash - nunca salvar em texto plano
+    @Column(nullable = false)
+    private String senha;
+
     // Status de verificação do cidadão (verificado ou não)
     @Column(nullable = false)
     private Boolean statusVerificacao = false;
@@ -36,11 +43,12 @@ public class Usuario {
     }
 
     // Construtor pra criar usuário novo
-    public Usuario(String nome, String cpf, String email, String telefone) {
+    public Usuario(String nome, String cpf, String email, String telefone, String senha) {
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
         this.telefone = telefone;
+        this.senha = senha;
         this.statusVerificacao = false;
         this.createdAt = LocalDateTime.now();
     }
@@ -86,6 +94,22 @@ public class Usuario {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    public String getNumeroCNS() {
+        return numeroCNS;
+    }
+
+    public void setNumeroCNS(String numeroCNS) {
+        this.numeroCNS = numeroCNS;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public Boolean getStatusVerificacao() {
