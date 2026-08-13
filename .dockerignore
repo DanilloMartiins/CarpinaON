@@ -1,0 +1,9 @@
+# Arquivos que não entram na imagem
+.git/
+target/
+.idea/
+.vscode/
+*.iml
+*.log
+config_banco.txt
+oracle-cloud/
