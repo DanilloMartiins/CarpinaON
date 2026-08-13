@@ -36,3 +36,22 @@ Thumbs.db
 
 # Arquivos sensíveis (não commitar!)
 config_banco.txt
+
+# Ambiente e secrets (.env real fica de fora, só o .env.example de exemplo sobe)
+.env
+.env.*
+!.env.example
+
+# Chaves SSH (privada e pública - nunca subir)
+*.pem
+*.ppk
+*.key
+id_rsa
+id_rsa.pub
+carpinaon-oracle
+carpinaon-oracle.pub
+
+# Segredos diversos
+secrets/
+credentials
+*.jks
