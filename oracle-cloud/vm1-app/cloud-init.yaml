@@ -1,0 +1,341 @@
+#cloud-config
+# VM1 (App) - Oracle Cloud Always Free ARM
+# Sobe o Spring Boot + Valkey de cache
+# O banco fica na VM2 (PostgreSQL), conecta via rede interna da VCN
+
+package_update: true
+package_upgrade: true
+packages:
+  - docker.io
+  - docker-compose-v2
+  - git
+  - htop
+  - vim
+  - curl
+  - unzip
+  - jq
+
+write_files:
+  # Rotação de log do docker pra não encher o disco free
+  - path: /etc/docker/daemon.json
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "10m",
+          "max-file": "3"
+        },
+        "storage-driver": "overlay2",
+        "default-ulimits": {
+          "nofile": {
+            "Name": "nofile",
+            "Hard": 65535,
+            "Soft": 65535
+          }
+        }
+      }
+    owner: root:root
+    permissions: '0644'
+
+  # Ajustes de rede pro app aguentar pico de acesso (WhatsApp viral da prefeitura)
+  - path: /etc/sysctl.d/99-app-tuning.conf
+    content: |
+      # Fila de conexões maior pro burst
+      net.core.somaxconn = 65535
+      net.core.netdev_max_backlog = 65535
+      net.ipv4.tcp_max_syn_backlog = 65535
+      net.ipv4.tcp_fin_timeout = 15
+      net.ipv4.tcp_tw_reuse = 1
+      net.ipv4.ip_local_port_range = 1024 65535
+
+      # Memória: swappiness baixo e overcommit seguro
+      vm.swappiness = 10
+      vm.overcommit_memory = 1
+      vm.overcommit_ratio = 80
+      vm.max_map_count = 262144
+
+      # Limite de arquivos abertos
+      fs.file-max = 1048576
+      fs.inotify.max_user_instances = 8192
+      fs.inotify.max_user_watches = 524288
+
+  - path: /etc/security/limits.d/99-docker.conf
+    content: |
+      * soft nofile 65535
+      * hard nofile 65535
+      * soft nproc 65535
+      * hard nproc 65535
+      root soft nofile 65535
+      root hard nofile 65535
+
+  # Docker Compose da aplicação (só app + valkey; o DB vive na VM2)
+  - path: /opt/carpinaon/docker-compose.yml
+    content: |
+      services:
+        app:
+          image: ghcr.io/danillomartiins/carpinaon:latest
+          container_name: carpinaon-app
+          restart: unless-stopped
+          ports:
+            - "8080:8080"
+          environment:
+            # DB fica na VM2, conecta no PgBouncer (6432) pelo IP privado da VCN
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST}:6432/carpinaon
+            - SPRING_DATASOURCE_USERNAME=carpinaon
+            - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+            # Pool de conexões: 25 é o ponto certo pra essa VM (não estoura o PG)
+            - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=25
+            - SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=10
+            - SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT=30000
+            - SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT=600000
+            - SPRING_DATASOURCE_HIKARI_MAX_LIFETIME=1800000
+            - SPRING_DATASOURCE_HIKARI_LEAK_DETECTION_THRESHOLD=60000
+
+            # JPA: update cria o schema (quando tiver Flyway, vira validate)
+            - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+            - SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_BATCH_SIZE=20
+            - SPRING_JPA_PROPERTIES_HIBERNATE_ORDER_INSERTS=true
+            - SPRING_JPA_PROPERTIES_HIBERNATE_ORDER_UPDATES=true
+
+            # Valkey cache: catálogo de serviços é lido o tempo todo, vai pro cache
+            - SPRING_DATA_REDIS_HOST=valkey
+            - SPRING_DATA_REDIS_PORT=6379
+            - SPRING_CACHE_TYPE=redis
+            - SPRING_CACHE_REDIS_TIME_TO_LIVE=600000
+            - SPRING_CACHE_REDIS_CACHE_NULL_VALUES=false
+
+            # JWT (gera a chave com: openssl rand -base64 64)
+            - JWT_SECRET=${JWT_SECRET}
+            - JWT_EXPIRATION=86400000
+
+            # Heap da JVM: explícito pra ser previsível na VM free
+            # 8GB de heap num container com 14GB de limite
+            - JAVA_TOOL_OPTIONS=-Xms2g -Xmx8g -XX:+UseG1GC
+              -XX:MaxGCPauseMillis=100 -XX:+ParallelRefProcEnabled
+              -XX:+PerfDisableSharedMem -XX:+UseStringDeduplication
+              -Djava.security.egd=file:/dev/./urandom
+
+            # Actuator expõe health/metrics pro monitoramento
+            - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,metrics,prometheus
+            - MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
+            - MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED=true
+
+            # Log: INFO em produção, DEBUG só se precisar investigar
+            - LOGGING_LEVEL_ROOT=INFO
+            - LOGGING_LEVEL_COM_CARPINAON=INFO
+            - LOGGING_PATTERN_CONSOLE=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+
+          deploy:
+            resources:
+              limits:
+                cpus: '3.5'
+                memory: 14G
+              reservations:
+                cpus: '2'
+                memory: 8G
+          healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 60s
+          logging:
+            driver: "json-file"
+            options:
+              max-size: "10m"
+              max-file: "3"
+          networks:
+            - carpinaon-network
+
+        valkey:
+          image: valkey/valkey:8-alpine
+          container_name: carpinaon-valkey
+          restart: unless-stopped
+          ports:
+            - "6379:6379"
+          command: >
+            valkey-server
+            --maxmemory 2gb
+            --maxmemory-policy allkeys-lru
+            --save 900 1
+            --save 300 10
+            --appendonly yes
+            --appendfsync everysec
+          volumes:
+            - valkey-data:/data
+          deploy:
+            resources:
+              limits:
+                cpus: '1'
+                memory: 3G
+              reservations:
+                cpus: '0.5'
+                memory: 1G
+          healthcheck:
+            test: ["CMD", "valkey-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+          logging:
+            driver: "json-file"
+            options:
+              max-size: "10m"
+              max-file: "3"
+          networks:
+            - carpinaon-network
+
+      volumes:
+        valkey-data:
+          driver: local
+
+      networks:
+        carpinaon-network:
+          driver: bridge
+          ipam:
+            config:
+              - subnet: 172.28.0.0/16
+
+    owner: ubuntu:ubuntu
+    permissions: '0644'
+
+  # Script de deploy: puxa a imagem nova e faz rolling update
+  - path: /opt/carpinaon/deploy.sh
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+
+      cd /opt/carpinaon
+
+      echo "[$(date)] Iniciando deploy..."
+
+      # Login no GHCR se tiver token (GitHub Actions ou manual)
+      if [[ -n "${GHCR_TOKEN:-}" ]]; then
+        echo "${GHCR_TOKEN}" | docker login ghcr.io -u "${GHCR_USER:-danillomartiins}" --password-stdin
+      fi
+
+      docker compose pull app
+
+      # Sobe com zero-downtime (o compose recria o container na hora)
+      docker compose up -d --no-deps app
+
+      # Limpa imagem antiga
+      docker image prune -f --filter "until=24h"
+
+      echo "[$(date)] Deploy concluído!"
+      docker compose ps
+
+    owner: ubuntu:ubuntu
+    permissions: '0755'
+
+  # Timer do systemd que roda o deploy a cada 15min (auto-update)
+  - path: /etc/systemd/system/carpinaon-deploy.service
+    content: |
+      [Unit]
+      Description=CarpinaON Auto Deploy
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Type=oneshot
+      WorkingDirectory=/opt/carpinaon
+      ExecStart=/opt/carpinaon/deploy.sh
+      User=ubuntu
+      Group=ubuntu
+      StandardOutput=journal
+      StandardError=journal
+
+    owner: root:root
+    permissions: '0644'
+
+  - path: /etc/systemd/system/carpinaon-deploy.timer
+    content: |
+      [Unit]
+      Description=Run CarpinaON deploy every 15 minutes
+
+      [Timer]
+      OnBootSec=5min
+      OnUnitActiveSec=15min
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+
+    owner: root:root
+    permissions: '0644'
+
+  # Secrets do app (preencher antes do primeiro up)
+  # DB_HOST = IP privado da VM2 dentro da VCN (ex: 10.0.0.2)
+  - path: /opt/carpinaon/.env
+    content: |
+      # IP privado da VM2 (PostgreSQL) na VCN
+      DB_HOST=trocar_pelo_ip_privado_da_vm2
+
+      # Senha do banco (gerar: openssl rand -base64 32)
+      DB_PASSWORD=trocar_por_senha_forte_aqui
+
+      # Chave do JWT (gerar: openssl rand -base64 64)
+      JWT_SECRET=trocar_por_chave_jwt_forte_aqui
+
+      # GHCR (pra auto-deploy, opcional)
+      GHCR_USER=danillomartiins
+      GHCR_TOKEN=
+
+    owner: ubuntu:ubuntu
+    permissions: '0600'
+
+  # Checagem rápida de saúde da VM1
+  - path: /opt/carpinaon/health-check.sh
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+
+      echo "=== CarpinaON Health Check $(date) ==="
+      echo
+
+      echo "--- Containers ---"
+      docker compose -f /opt/carpinaon/docker-compose.yml ps
+
+      echo
+      echo "--- App Health ---"
+      curl -sf http://localhost:8080/actuator/health | jq . || echo "APP DOWN"
+
+      echo
+      echo "--- Valkey ---"
+      docker exec carpinaon-valkey valkey-cli ping || echo "VALKEY DOWN"
+
+      echo
+      echo "--- Recursos ---"
+      free -h
+      echo
+      df -h /
+
+      echo
+      echo "--- Conexões DB ativas (via app) ---"
+      curl -sf http://localhost:8080/actuator/metrics/hikari.connections.active | jq '.measurements[0].value' || echo "N/A"
+
+    owner: ubuntu:ubuntu
+    permissions: '0755'
+
+runcmd:
+  # Sobe o docker e aplica os ajustes de rede
+  - systemctl enable --now docker
+  - sysctl --system
+
+  # Dá acesso ao docker pro ubuntu (evita sudo em todo comando)
+  - usermod -aG docker ubuntu
+
+  # Auto-deploy: deixe descomentado quando quiser ativar
+  # - systemctl enable --now carpinaon-deploy.timer
+
+  # Atalhos úteis no terminal
+  - echo 'alias carpinaon="cd /opt/carpinaon && docker compose"' >> /home/ubuntu/.bashrc
+  - echo 'alias logs="cd /opt/carpinaon && docker compose logs -f --tail=100"' >> /home/ubuntu/.bashrc
+  - echo 'alias health="/opt/carpinaon/health-check.sh"' >> /home/ubuntu/.bashrc
+
+  - chown -R ubuntu:ubuntu /opt/carpinaon
+  - systemctl restart docker
+  - cd /opt/carpinaon && docker compose pull
+
+  - echo "=== VM1 App Cloud-init concluído em $(date) ===" >> /var/log/carpinaon-init.log
+
+final_message: "VM1 (App) pronta! Preencha o .env (DB_HOST e senhas) e rode: docker compose up -d"
