@@ -1,0 +1,43 @@
+# Render Blueprint - Plano B provisório (backend)
+# Enquanto o Oracle Cloud está bloqueado, o app roda aqui pra validar com o Flutter.
+# Quando o Oracle subir, esse arquivo deixa de existir.
+
+services:
+  - type: web
+    name: carpinaon-api
+    runtime: docker
+    repo: https://github.com/DanilloMartiins/CarpinaON
+    branch: master
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health
+    plan: free
+    envVars:
+      # Supabase (Session pooler, IPv4 free). Banco: postgres
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://aws-0-sa-east-1.pooler.supabase.com:5432/postgres
+      - key: SPRING_DATASOURCE_USERNAME
+        value: postgres.mywwfkfvyfncekwmmgos
+
+      # Segredos: preencher no dashboard do Render (não vai pro repo)
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+
+      # Pool pequeno pro Supabase free não estourar conexões
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "10"
+      - key: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
+        value: "2"
+      - key: SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT
+        value: "30000"
+
+      # Sem Flyway ainda: o JPA cria o schema
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+
+      # Logs em produção
+      - key: LOGGING_LEVEL_ROOT
+        value: INFO
+      - key: LOGGING_LEVEL_COM_CARPINAON
+        value: INFO
