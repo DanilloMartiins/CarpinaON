@@ -1,0 +1,519 @@
+{
+	"info": {
+		"_postman_id": "carpinaon-collection-2026",
+		"name": "CarpinaON",
+		"description": "API do CarpinaON - Portal de serviços municipais\n\nBase: http://localhost:8080 (local) ou https://carpinaon-api.onrender.com (Render)\n\nUso: rode o request \"Login\" primeiro para o token ser salvo automaticamente na variável {{token}}.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "protocolo",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Cadastrar cidadão",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Cadastro retorna 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Retorna dados do usuário\", function () {",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.have.property('id');",
+									"    pm.expect(json).to.have.property('nome');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Maria da Silva\",\n    \"cpf\": \"12345678901\",\n    \"email\": \"maria@teste.com\",\n    \"telefone\": \"81999999999\",\n    \"senha\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/cadastrar",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "cadastrar"]
+						},
+						"description": "Cadastra um novo cidadão. CPF é único. Retorna os dados sem a senha."
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Login retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Salva o token automaticamente pra usar nos outros requests",
+									"var json = pm.response.json();",
+									"if (json.token) {",
+									"    pm.collectionVariables.set('token', json.token);",
+									"}",
+									"",
+									"pm.test(\"Retorna token JWT\", function () {",
+									"    pm.expect(json).to.have.property('token');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cpf\": \"12345678901\",\n    \"senha\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "login"]
+						},
+						"description": "Login por CPF + senha. Salva o token JWT na variável {{token}} automaticamente. Token válido por 24h."
+					}
+				}
+			]
+		},
+		{
+			"name": "Catálogo",
+			"item": [
+				{
+					"name": "Listar categorias",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/categorias",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "categorias"]
+						},
+						"description": "Lista as categorias de serviços (Infraestrutura, Saúde, etc). Usada na tela inicial do app."
+					}
+				},
+				{
+					"name": "Listar serviços",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/servicos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "servicos"]
+						},
+						"description": "Lista todos os serviços ativos (busca geral do app)."
+					}
+				},
+				{
+					"name": "Serviços por categoria",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/servicos/categoria/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "servicos", "categoria", "1"]
+						},
+						"description": "Lista os serviços ativos de uma categoria específica (troque o /1 pelo id da categoria)."
+					}
+				}
+			]
+		},
+		{
+			"name": "Solicitações",
+			"item": [
+				{
+					"name": "Criar solicitação",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Criação retorna 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Salva o protocolo pra usar no request de buscar por protocolo",
+									"var json = pm.response.json();",
+									"if (json.protocolo) {",
+									"    pm.collectionVariables.set('protocolo', json.protocolo);",
+									"}",
+									"",
+									"pm.test(\"Retorna protocolo\", function () {",
+									"    pm.expect(json).to.have.property('protocolo');",
+									"    pm.expect(json.status).to.eql('RECEBIDA');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"servicoIds\": [1],\n    \"cep\": \"55815000\",\n    \"complemento\": \"\",\n    \"pontoReferencia\": \"Proximo ao mercado\",\n    \"descricao\": \"Buraco na rua em frente a minha casa\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/solicitacoes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "solicitacoes"]
+						},
+						"description": "Cria uma solicitação (protocolo). Requer token JWT. servicoIds aceita apenas 1 serviço por vez."
+					}
+				},
+				{
+					"name": "Listar minhas solicitações",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/solicitacoes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "solicitacoes"]
+						},
+						"description": "Lista os protocolos do usuário logado (resumido)."
+					}
+				},
+				{
+					"name": "Buscar por protocolo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/solicitacoes/{{protocolo}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "solicitacoes", "{{protocolo}}"]
+						},
+						"description": "Busca uma solicitação pelo protocolo. Traz detalhe completo: serviço, anexos e histórico de status."
+					}
+				},
+				{
+					"name": "Atualizar status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Status atualizado\", function () {",
+									"    pm.expect(pm.response.json().status).to.eql('EM_ANDAMENTO');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"EM_ANDAMENTO\",\n    \"observacao\": \"Equipe alocada para atendimento\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/solicitacoes/2/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "solicitacoes", "2", "status"]
+						},
+						"description": "Atualiza o status (admin). Status válidos: RECEBIDA, EM_ANALISE, EM_ANDAMENTO, RESOLVIDA, INDEFERIDA, CANCELADA. INDEFERIDA exige observação. Troque o /2 pelo id da solicitação."
+					}
+				}
+			]
+		},
+		{
+			"name": "Notificações",
+			"item": [
+				{
+					"name": "Listar notificações",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/notificacoes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "notificacoes"]
+						},
+						"description": "Lista as notificações do usuário logado (mais recentes primeiro)."
+					}
+				},
+				{
+					"name": "Contar não lidas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Retorna quantidade\", function () {",
+									"    pm.expect(pm.response.json()).to.have.property('quantidade');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/notificacoes/nao-lidas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "notificacoes", "nao-lidas"]
+						},
+						"description": "Conta quantas notificações não lidas o usuário tem (badge do app)."
+					}
+				},
+				{
+					"name": "Marcar como lida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Marca como lida\", function () {",
+									"    pm.expect(pm.response.json().lida).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/notificacoes/1/lida",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "notificacoes", "1", "lida"]
+						},
+						"description": "Marca uma notificação como lida. Só o dono pode marcar a própria. Troque o /1 pelo id da notificação."
+					}
+				}
+			]
+		},
+		{
+			"name": "Turismo",
+			"item": [
+				{
+					"name": "Próximos eventos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/eventos/proximos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "eventos", "proximos"]
+						},
+						"description": "Lista os próximos eventos (6 meses a partir de hoje). Usado na home 'Descubra Carpina'."
+					}
+				},
+				{
+					"name": "Todos os eventos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/eventos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "eventos"]
+						},
+						"description": "Lista todos os eventos cadastrados."
+					}
+				}
+			]
+		}
+	]
+}

@@ -19,9 +19,8 @@ public class HistoricoStatus {
     @JoinColumn(name = "solicitacao_id", nullable = false)
     private Solicitacao solicitacao;
 
-    // Status que estava antes
+    // Status que estava antes (null no primeiro registro, quando a solicitação é criada)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private StatusSolicitacao statusAnterior;
 
     // Status novo
