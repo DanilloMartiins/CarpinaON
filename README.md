@@ -1,8 +1,8 @@
-# 🏛️ CarpinaON
+# CarpinaON
 
 API REST do portal de serviços municipais de Carpina, no estilo "gov.br" municipal.
 
-Desenvolvido em parceria: este repositório é o back-end (API), o app mobile (Flutter) fica em outro repositório.
+Desenvolvido em parceria: este repositório contém o back-end (API) e o app mobile (Flutter).
 
 ## Stack
 

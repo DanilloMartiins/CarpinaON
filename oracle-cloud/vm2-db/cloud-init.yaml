@@ -123,6 +123,34 @@ write_files:
           networks:
             - carpinaon-network
 
+        # Expositor de métricas do PostgreSQL pro Prometheus da VM1
+        # Expõe na porta 9187, acessível só pela rede interna da VCN
+        postgres-exporter:
+          image: prometheuscommunity/postgres-exporter:v0.15.0
+          container_name: carpinaon-postgres-exporter
+          restart: unless-stopped
+          depends_on:
+            - db
+          environment:
+            - DATA_SOURCE_NAME=postgresql://carpinaon:${DB_PASSWORD}@db:5432/carpinaon?sslmode=disable
+          ports:
+            - "9187:9187"
+          deploy:
+            resources:
+              limits:
+                cpus: '0.25'
+                memory: 128M
+              reservations:
+                cpus: '0.1'
+                memory: 64M
+          logging:
+            driver: "json-file"
+            options:
+              max-size: "10m"
+              max-file: "3"
+          networks:
+            - carpinaon-network
+
       volumes:
         pgdata:
           driver: local

@@ -147,6 +147,124 @@ write_files:
           networks:
             - carpinaon-network
 
+        prometheus:
+          image: prom/prometheus:v2.53.0
+          container_name: carpinaon-prometheus
+          restart: unless-stopped
+          command:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.retention.time=30d"
+            - "--storage.tsdb.path=/prometheus"
+          ports:
+            - "9090:9090"
+          extra_hosts:
+            # Resolve "postgres-exporter" pro IP privado da VM2 (definido no .env)
+            - "postgres-exporter:${DB_HOST}"
+          volumes:
+            - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+            - ./monitoring/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+            - prometheus-data:/prometheus
+          deploy:
+            resources:
+              limits:
+                cpus: '0.5'
+                memory: 512M
+              reservations:
+                cpus: '0.25'
+                memory: 256M
+          logging:
+            driver: "json-file"
+            options:
+              max-size: "10m"
+              max-file: "3"
+          networks:
+            - carpinaon-network
+
+        # Métricas de sistema da VM (CPU, memória, disco) pro alerta de CPU
+        node-exporter:
+          image: prom/node-exporter:v1.8.2
+          container_name: carpinaon-node-exporter
+          restart: unless-stopped
+          command:
+            - "--path.rootfs=/host"
+          pid: host
+          volumes:
+            - /:/host:ro,rslave
+          ports:
+            - "9100:9100"
+          deploy:
+            resources:
+              limits:
+                cpus: '0.25'
+                memory: 128M
+              reservations:
+                cpus: '0.1'
+                memory: 64M
+          logging:
+            driver: "json-file"
+            options:
+              max-size: "10m"
+              max-file: "3"
+          networks:
+            - carpinaon-network
+
+        alertmanager:
+          image: prom/alertmanager:v0.27.0
+          container_name: carpinaon-alertmanager
+          restart: unless-stopped
+          command:
+            - "--config.file=/etc/alertmanager/alertmanager.yml"
+          ports:
+            - "9093:9093"
+          volumes:
+            - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+            - alertmanager-data:/alertmanager
+          deploy:
+            resources:
+              limits:
+                cpus: '0.25'
+                memory: 128M
+              reservations:
+                cpus: '0.1'
+                memory: 64M
+          logging:
+            driver: "json-file"
+            options:
+              max-size: "10m"
+              max-file: "3"
+          networks:
+            - carpinaon-network
+
+        grafana:
+          image: grafana/grafana:11.1.0
+          container_name: carpinaon-grafana
+          restart: unless-stopped
+          environment:
+            # Login inicial: admin / admin (troque no primeiro acesso)
+            - GF_SECURITY_ADMIN_USER=admin
+            - GF_SECURITY_ADMIN_PASSWORD=admin
+            - GF_USERS_ALLOW_SIGN_UP=false
+            - GF_SERVER_ROOT_URL=http://localhost:3000
+          ports:
+            - "3000:3000"
+          volumes:
+            - grafana-data:/var/lib/grafana
+          deploy:
+            resources:
+              limits:
+                cpus: '0.5'
+                memory: 512M
+              reservations:
+                cpus: '0.25'
+                memory: 256M
+          logging:
+            driver: "json-file"
+            options:
+              max-size: "10m"
+              max-file: "3"
+          networks:
+            - carpinaon-network
+
         valkey:
           image: valkey/valkey:8-alpine
           container_name: carpinaon-valkey
@@ -187,6 +305,12 @@ write_files:
       volumes:
         valkey-data:
           driver: local
+        prometheus-data:
+          driver: local
+        alertmanager-data:
+          driver: local
+        grafana-data:
+          driver: local
 
       networks:
         carpinaon-network:
@@ -194,6 +318,97 @@ write_files:
           ipam:
             config:
               - subnet: 172.28.0.0/16
+
+    owner: ubuntu:ubuntu
+    permissions: '0644'
+
+  # Config do Prometheus (montada pelo compose acima)
+  - path: /opt/carpinaon/monitoring/prometheus.yml
+    content: |
+      global:
+        scrape_interval: 15s
+        evaluation_interval: 15s
+
+      rule_files:
+        - /etc/prometheus/alert-rules.yml
+
+      alerting:
+        alertmanagers:
+          - static_configs:
+              - targets: ["alertmanager:9093"]
+
+      scrape_configs:
+        - job_name: "carpinaon-app"
+          metrics_path: /actuator/prometheus
+          static_configs:
+            - targets: ["app:8080"]
+
+        # postgres-exporter vive na VM2; o extra_hosts resolve o IP via DB_HOST
+        - job_name: "carpinaon-db"
+          static_configs:
+            - targets: ["postgres-exporter:9187"]
+
+        - job_name: "carpinaon-node"
+          static_configs:
+            - targets: ["node-exporter:9100"]
+
+        - job_name: "prometheus"
+          static_configs:
+            - targets: ["localhost:9090"]
+
+    owner: ubuntu:ubuntu
+    permissions: '0644'
+
+  # Regras de alerta (limites do planejamento de carga)
+  - path: /opt/carpinaon/monitoring/alert-rules.yml
+    content: |
+      groups:
+        - name: carpinaon-alerts
+          rules:
+            - alert: CPUAlta
+              expr: (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))) * 100 > 80
+              for: 5m
+              labels:
+                severity: critical
+              annotations:
+                summary: "CPU acima de 80% por 5 minutos"
+                description: "CPU da VM1 está em {{ $value }}%. Checando se é pico ou problema real."
+
+            - alert: DBConexoesAltas
+              expr: pg_stat_database_numbackends{datname="carpinaon"} > 250
+              for: 2m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Conexões com o banco acima de 250"
+                description: "O banco está com {{ $value }} conexões ativas. Limite crítico é 300."
+
+            - alert: LatenciaAlta
+              expr: histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket[5m])) by (le)) > 3
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Latência P99 acima de 3s"
+                description: "A latência P99 está em {{ $value }}s por mais de 5 minutos."
+
+    owner: ubuntu:ubuntu
+    permissions: '0644'
+
+  # Alertmanager: webhook genérico, plugue Telegram/Slack/e-mail quando quiser
+  - path: /opt/carpinaon/monitoring/alertmanager.yml
+    content: |
+      route:
+        group_by: ["alertname"]
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 4h
+        receiver: "default"
+
+      receivers:
+        - name: "default"
+          webhook_configs:
+            - url: ""
 
     owner: ubuntu:ubuntu
     permissions: '0644'
@@ -302,6 +517,14 @@ write_files:
       echo
       echo "--- Valkey ---"
       docker exec carpinaon-valkey valkey-cli ping || echo "VALKEY DOWN"
+
+      echo
+      echo "--- Prometheus ---"
+      curl -sf http://localhost:9090/-/healthy > /dev/null && echo "OK" || echo "PROMETHEUS DOWN"
+
+      echo
+      echo "--- Grafana ---"
+      curl -sf http://localhost:3000/api/health > /dev/null && echo "OK" || echo "GRAFANA DOWN"
 
       echo
       echo "--- Recursos ---"

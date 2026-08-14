@@ -1,0 +1,32 @@
+groups:
+  - name: carpinaon-alerts
+    rules:
+      # CPU da VM de app estourada por 5 minutos (média de todos os cores)
+      - alert: CPUAlta
+        expr: (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))) * 100 > 80
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CPU acima de 80% por 5 minutos"
+          description: "CPU da VM1 está em {{ $value }}%. Checando se é pico ou problema real."
+
+      # Conexões com o banco acima de 250 (limite de carga crítica)
+      - alert: DBConexoesAltas
+        expr: pg_stat_database_numbackends{datname="carpinaon"} > 250
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Conexões com o banco acima de 250"
+          description: "O banco está com {{ $value }} conexões ativas. Limite crítico é 300."
+
+      # Latência P99 do app acima de 3s
+      - alert: LatenciaAlta
+        expr: histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket[5m])) by (le)) > 3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latência P99 acima de 3s"
+          description: "A latência P99 está em {{ $value }}s por mais de 5 minutos."

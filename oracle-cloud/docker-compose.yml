@@ -101,10 +101,76 @@ services:
     networks:
       - carpinaon-network
 
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: carpinaon-prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=30d"
+      - "--storage.tsdb.path=/prometheus"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - carpinaon-network
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: carpinaon-alertmanager
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    networks:
+      - carpinaon-network
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: carpinaon-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - carpinaon-network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: carpinaon-postgres-exporter
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      - DATA_SOURCE_NAME=postgresql://carpinaon:${DB_PASSWORD}@db:5432/carpinaon?sslmode=disable
+    ports:
+      - "9187:9187"
+    networks:
+      - carpinaon-network
+
 volumes:
   pgdata:
     driver: local
   valkey-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  alertmanager-data:
+    driver: local
+  grafana-data:
     driver: local
 
 networks:

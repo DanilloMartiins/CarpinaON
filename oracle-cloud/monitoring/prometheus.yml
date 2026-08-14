@@ -1,0 +1,35 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Regras de alerta (limites do planejamento de carga)
+rule_files:
+  - /etc/prometheus/alert-rules.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  # Métricas do Spring Boot (actuator / prometheus)
+  - job_name: "carpinaon-app"
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["app:8080"]
+
+  # Métricas do PostgreSQL (postgres-exporter na VM2)
+  # Na VM1 o hostname "postgres-exporter" é resolvido via extra_hosts pro IP da VM2 (DB_HOST)
+  - job_name: "carpinaon-db"
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+
+  # Métricas de sistema da VM (CPU, memória, disco) pro alerta de CPU
+  - job_name: "carpinaon-node"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  # Métricas do próprio Prometheus
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
