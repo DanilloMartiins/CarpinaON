@@ -40,6 +40,12 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- Actuator: healthcheck e métricas (Prometheus pro monitoramento) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- Validação de beans (.notNull, etc) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
