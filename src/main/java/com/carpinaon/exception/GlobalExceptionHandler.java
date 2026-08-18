@@ -2,6 +2,7 @@ package com.carpinaon.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,5 +43,16 @@ public class GlobalExceptionHandler {
         response.put("erro", ex.getMessage());
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    // Acesso negado - usuário logado tentou usar uma rota que não é do perfil dele
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.FORBIDDEN.value());
+        response.put("erro", "Acesso negado: você não tem permissão para essa ação.");
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 }

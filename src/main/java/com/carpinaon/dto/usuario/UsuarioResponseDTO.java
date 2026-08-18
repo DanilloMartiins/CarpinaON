@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.carpinaon.model.enums.PerfilUsuario;
 import java.time.LocalDateTime;
 
 @Data
@@ -18,5 +19,6 @@ public class UsuarioResponseDTO {
     private String telefone;
     private String numeroCNS;
     private Boolean statusVerificacao;
+    private PerfilUsuario role;
     private LocalDateTime createdAt;
 }

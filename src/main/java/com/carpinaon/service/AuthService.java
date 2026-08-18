@@ -6,6 +6,7 @@ import com.carpinaon.dto.auth.AuthResponseDTO;
 import com.carpinaon.dto.usuario.UsuarioRequestDTO;
 import com.carpinaon.dto.usuario.UsuarioResponseDTO;
 import com.carpinaon.model.Usuario;
+import com.carpinaon.model.enums.PerfilUsuario;
 import com.carpinaon.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,8 +38,10 @@ public class AuthService {
             throw new RuntimeException("CPF ou senha inválidos");
         }
 
-        // Gera o token JWT
-        String token = jwtUtil.gerarToken(usuario.getCpf());
+        // Gera o token JWT com o perfil do usuário.
+        // Fallback pra CIDADAO porque usuários antigos do banco podem ter perfil nulo
+        PerfilUsuario role = usuario.getRole() != null ? usuario.getRole() : PerfilUsuario.CIDADAO;
+        String token = jwtUtil.gerarToken(usuario.getCpf(), role);
 
         // Monta a resposta
         AuthResponseDTO response = new AuthResponseDTO();
@@ -75,6 +78,9 @@ public class AuthService {
             usuario.setNumeroCNS(request.getNumeroCNS());
         }
 
+        // Todo cadastro pelo app é de cidadão
+        usuario.setRole(PerfilUsuario.CIDADAO);
+
         usuario = usuarioRepository.save(usuario);
         return toResponse(usuario);
     }
@@ -89,6 +95,7 @@ public class AuthService {
         dto.setTelefone(usuario.getTelefone());
         dto.setNumeroCNS(usuario.getNumeroCNS());
         dto.setStatusVerificacao(usuario.getStatusVerificacao());
+        dto.setRole(usuario.getRole() != null ? usuario.getRole() : PerfilUsuario.CIDADAO);
         dto.setCreatedAt(usuario.getCreatedAt());
         return dto;
     }

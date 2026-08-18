@@ -184,6 +184,7 @@ public class SolicitacaoService {
                 usuario.getTelefone(),
                 usuario.getNumeroCNS(),
                 usuario.getStatusVerificacao(),
+                usuario.getRole(),
                 usuario.getCreatedAt()
         );
 

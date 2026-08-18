@@ -1,6 +1,7 @@
 package com.carpinaon.model;
 
 import jakarta.persistence.*;
+import com.carpinaon.model.enums.PerfilUsuario;
 import java.time.LocalDateTime;
 
 // Entidade que representa o usuário do sistema (cidadão ou servidor)
@@ -34,6 +35,12 @@ public class Usuario {
     // Status de verificação do cidadão (verificado ou não)
     @Column(nullable = false)
     private Boolean statusVerificacao = false;
+
+    // Perfil do usuário: CIDADAO ou ADMIN (servidor público).
+    // Coluna chamada "perfil" porque "role" é palavra reservada do PostgreSQL
+    @Enumerated(EnumType.STRING)
+    @Column(name = "perfil", nullable = false)
+    private PerfilUsuario role = PerfilUsuario.CIDADAO;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -118,6 +125,14 @@ public class Usuario {
 
     public void setStatusVerificacao(Boolean statusVerificacao) {
         this.statusVerificacao = statusVerificacao;
+    }
+
+    public PerfilUsuario getRole() {
+        return role;
+    }
+
+    public void setRole(PerfilUsuario role) {
+        this.role = role;
     }
 
     public LocalDateTime getCreatedAt() {

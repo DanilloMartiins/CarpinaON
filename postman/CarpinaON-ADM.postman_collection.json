@@ -1,0 +1,127 @@
+{
+	"info": {
+		"_postman_id": "carpinaon-adm-collection-2026",
+		"name": "CarpinaON - ADM",
+		"description": "API do CarpinaON - Área Administrativa (Servidor Público)\n\nBase: http://localhost:8080 (local) ou https://carpinaon-api.onrender.com (Render)\n\nUso: rode o request \"Login servidor\" primeiro para o token ser salvo automaticamente na variável {{token}}.\n\nIMPORTANTE: os endpoints de CRUD admin (categorias, serviços, eventos e gestão de solicitações) serão adicionados conforme forem implementados no backend. Por enquanto esta collection cobre a autenticação com perfil (role ADMIN/CIDADÃO).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login servidor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Login retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var json = pm.response.json();",
+									"",
+									"// Salva o token automaticamente pra usar nos outros requests",
+									"if (json.token) {",
+									"    pm.collectionVariables.set('token', json.token);",
+									"}",
+									"",
+									"// Valida que o usuário logado tem perfil de servidor (ADMIN)",
+									"pm.test(\"Retorna token JWT\", function () {",
+									"    pm.expect(json).to.have.property('token');",
+									"});",
+									"",
+									"pm.test(\"Usuário tem perfil ADMIN\", function () {",
+									"    if (json.usuario && json.usuario.role) {",
+									"        pm.expect(json.usuario.role).to.eql('ADMIN');",
+									"    } else {",
+									"        pm.expect.fail('Resposta não trouxe o campo role');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cpf\": \"11122233344\",\n    \"senha\": \"teste123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "login"]
+						},
+						"description": "Login por CPF + senha. O token retornado já carrega o perfil (claim role) do usuário. Salva o token na variável {{token}}.\n\nSe o teste \"Usuário tem perfil ADMIN\" falhar, o CPF usado não tem perfil de servidor no banco."
+					}
+				},
+				{
+					"name": "Cadastrar cidadão",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Cadastro retorna 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"var json = pm.response.json();",
+									"",
+									"pm.test(\"Cidadão nasce com role CIDADÃO\", function () {",
+									"    if (json.role) {",
+									"        pm.expect(json.role).to.eql('CIDADAO');",
+									"    } else {",
+									"        pm.expect.fail('Resposta não trouxe o campo role');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Servidor de Teste\",\n    \"cpf\": \"99988877766\",\n    \"email\": \"servidor@teste.com\",\n    \"telefone\": \"81988888888\",\n    \"senha\": \"teste123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/cadastrar",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "cadastrar"]
+						},
+						"description": "Todo cadastro pela API nasce com perfil CIDADÃO. Pra virar servidor (ADMIN), o perfil precisa ser alterado no banco (não existe endpoint público de promoção por segurança)."
+					}
+				}
+			]
+		}
+	]
+}
