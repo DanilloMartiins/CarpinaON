@@ -12,11 +12,11 @@ services:
     healthCheckPath: /actuator/health
     plan: free
     envVars:
-      # Supabase (Session pooler, IPv4 free). Banco: postgres
+      # Neon (Postgres serverless). Banco: neondb
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://aws-0-sa-east-1.pooler.supabase.com:5432/postgres
+        value: jdbc:postgresql://ep-polished-unit-afua843w.c-2.us-west-2.aws.neon.tech:5432/neondb?sslmode=require
       - key: SPRING_DATASOURCE_USERNAME
-        value: postgres.mywwfkfvyfncekwmmgos
+        value: neondb_owner
 
       # Segredos: preencher no dashboard do Render (não vai pro repo)
       - key: SPRING_DATASOURCE_PASSWORD
@@ -24,7 +24,7 @@ services:
       - key: JWT_SECRET
         sync: false
 
-      # Pool pequeno pro Supabase free não estourar conexões
+      # Pool pequeno pro Neon free não estourar conexões
       - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
         value: "10"
       - key: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
