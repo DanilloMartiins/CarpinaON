@@ -22,6 +22,10 @@ public class Categoria {
     // Cor em hexadecimal pra estilizar no app
     private String cor;
 
+    // Se a categoria tá ativa ou não (pode esconder sem apagar)
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
     // Construtor padrão
     public Categoria() {
     }
@@ -73,5 +77,13 @@ public class Categoria {
 
     public void setCor(String cor) {
         this.cor = cor;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 }

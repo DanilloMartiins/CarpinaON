@@ -30,6 +30,12 @@ public class UsuarioRequestDTO {
     //  ou na UBS do seu bairro."
     private String numeroCNS;
 
+    // Opcional - RG do cidadão (mostra no perfil)
+    private String rg;
+
+    // Opcional - NIS do cidadão (programas sociais)
+    private String nis;
+
     @NotBlank(message = "Senha é obrigatória")
     private String senha;
 }

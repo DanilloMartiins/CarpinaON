@@ -18,4 +18,6 @@ public class EventoTurismoResponseDTO {
     private LocalDateTime dataInicio;
     private LocalDateTime dataFim;
     private String local;
+    private String imagemUrl;
+    private Double rating;
 }

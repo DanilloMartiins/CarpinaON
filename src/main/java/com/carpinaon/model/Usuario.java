@@ -28,6 +28,12 @@ public class Usuario {
     // Número do Cartão Nacional de Saúde (opcional)
     private String numeroCNS;
 
+    // RG do cidadão (opcional - o app mostra no perfil)
+    private String rg;
+
+    // Número de Identificação Social (opcional - usado pra programas sociais)
+    private String nis;
+
     // Senha hash - nunca salvar em texto plano
     @Column(nullable = false)
     private String senha;
@@ -109,6 +115,22 @@ public class Usuario {
 
     public void setNumeroCNS(String numeroCNS) {
         this.numeroCNS = numeroCNS;
+    }
+
+    public String getRg() {
+        return rg;
+    }
+
+    public void setRg(String rg) {
+        this.rg = rg;
+    }
+
+    public String getNis() {
+        return nis;
+    }
+
+    public void setNis(String nis) {
+        this.nis = nis;
     }
 
     public String getSenha() {

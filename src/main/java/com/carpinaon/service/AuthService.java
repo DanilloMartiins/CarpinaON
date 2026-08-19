@@ -78,6 +78,15 @@ public class AuthService {
             usuario.setNumeroCNS(request.getNumeroCNS());
         }
 
+        // RG e NIS são opcionais - cidadão pode preencher depois no perfil
+        if (request.getRg() != null) {
+            usuario.setRg(request.getRg());
+        }
+
+        if (request.getNis() != null) {
+            usuario.setNis(request.getNis());
+        }
+
         // Todo cadastro pelo app é de cidadão
         usuario.setRole(PerfilUsuario.CIDADAO);
 
@@ -94,6 +103,8 @@ public class AuthService {
         dto.setEmail(usuario.getEmail());
         dto.setTelefone(usuario.getTelefone());
         dto.setNumeroCNS(usuario.getNumeroCNS());
+        dto.setRg(usuario.getRg());
+        dto.setNis(usuario.getNis());
         dto.setStatusVerificacao(usuario.getStatusVerificacao());
         dto.setRole(usuario.getRole() != null ? usuario.getRole() : PerfilUsuario.CIDADAO);
         dto.setCreatedAt(usuario.getCreatedAt());

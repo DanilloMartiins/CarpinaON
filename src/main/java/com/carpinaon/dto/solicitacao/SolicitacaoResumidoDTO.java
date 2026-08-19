@@ -16,6 +16,9 @@ public class SolicitacaoResumidoDTO {
     private Long id;
     private String protocolo;
     private StatusSolicitacao status;
+    private String statusDescricao;
     private ServicoResumidoDTO servico;
+    private String descricao;
+    private String endereco;
     private LocalDateTime createdAt;
 }

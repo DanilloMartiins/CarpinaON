@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,5 +19,8 @@ public class ServicoResponseDTO {
     private String naoUsarPara;
     private Boolean requerEndereco;
     private Boolean ativo;
+    private String formType;
+    private Integer estimatedDays;
+    private List<String> requiredDocuments;
     private CategoriaResumidoDTO categoria;
 }

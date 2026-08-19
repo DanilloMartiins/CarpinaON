@@ -1,6 +1,8 @@
 package com.carpinaon.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 // Serviço específico dentro de uma categoria
 // Ex: dentro de "Saúde" pode ter "Agendamento de Consulta", "Vacinação", etc
@@ -37,6 +39,18 @@ public class Servico {
     // Se o serviço tá ativo ou não (pode desativar sem deletar)
     @Column(nullable = false)
     private Boolean ativo = true;
+
+    // Tipo do formulário no app (o Flutter usa isso pra abrir o formulário certo)
+    private String formType;
+
+    // Prazo estimado em dias úteis pra resposta do pedido
+    private Integer estimatedDays = 0;
+
+    // Documentos que o cidadão precisa anexar (ex: "Foto do Poste")
+    @ElementCollection
+    @CollectionTable(name = "servico_documentos", joinColumns = @JoinColumn(name = "servico_id"))
+    @Column(name = "documento")
+    private List<String> requiredDocuments = new ArrayList<>();
 
     // Construtor padrão
     public Servico() {
@@ -117,5 +131,29 @@ public class Servico {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getFormType() {
+        return formType;
+    }
+
+    public void setFormType(String formType) {
+        this.formType = formType;
+    }
+
+    public Integer getEstimatedDays() {
+        return estimatedDays;
+    }
+
+    public void setEstimatedDays(Integer estimatedDays) {
+        this.estimatedDays = estimatedDays;
+    }
+
+    public List<String> getRequiredDocuments() {
+        return requiredDocuments;
+    }
+
+    public void setRequiredDocuments(List<String> requiredDocuments) {
+        this.requiredDocuments = requiredDocuments;
     }
 }

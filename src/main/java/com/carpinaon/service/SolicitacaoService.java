@@ -155,7 +155,10 @@ public class SolicitacaoService {
                 solicitacao.getId(),
                 solicitacao.getProtocolo(),
                 solicitacao.getStatus(),
+                solicitacao.getStatus().getDescricao(),
                 servicoResumido,
+                solicitacao.getDescricao(),
+                solicitacao.getEndereco(),
                 solicitacao.getCreatedAt()
         );
     }
@@ -183,6 +186,8 @@ public class SolicitacaoService {
                 usuario.getEmail(),
                 usuario.getTelefone(),
                 usuario.getNumeroCNS(),
+                usuario.getRg(),
+                usuario.getNis(),
                 usuario.getStatusVerificacao(),
                 usuario.getRole(),
                 usuario.getCreatedAt()
@@ -203,6 +208,9 @@ public class SolicitacaoService {
                 servico.getNaoUsarPara(),
                 servico.getRequerEndereco(),
                 servico.getAtivo(),
+                servico.getFormType(),
+                servico.getEstimatedDays(),
+                servico.getRequiredDocuments(),
                 categoria
         );
 
@@ -210,6 +218,7 @@ public class SolicitacaoService {
                 solicitacao.getId(),
                 solicitacao.getProtocolo(),
                 solicitacao.getStatus(),
+                solicitacao.getStatus().getDescricao(),
                 solicitacao.getCep(),
                 solicitacao.getEndereco(),
                 solicitacao.getComplemento(),

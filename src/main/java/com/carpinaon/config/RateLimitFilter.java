@@ -27,6 +27,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
     // Rotas que não têm prefeitura no path (ex: /api/v1/auth/...)
     private static final Set<String> ROTAS_SEM_TENANT = Set.of("auth");
 
+    // Rotas que o rate limit não bloqueia (Swagger carrega vários arquivos de uma vez)
+    private static final Set<String> ROTAS_LIBERADAS = Set.of(
+            "/swagger-ui", "/swagger-ui.html", "/v3/api-docs"
+    );
+
     // Limite por prefeitura: 50 requisições a cada 10 segundos
     private static final int LIMITE_TENANT = 50;
     private static final Duration JANELA_TENANT = Duration.ofSeconds(10);
@@ -41,6 +46,15 @@ public class RateLimitFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+        // Swagger e documentação passam direto (não é API)
+        String uri = request.getRequestURI();
+        for (String rota : ROTAS_LIBERADAS) {
+            if (uri.startsWith(rota)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
 
         String chave = montaChave(request);
 

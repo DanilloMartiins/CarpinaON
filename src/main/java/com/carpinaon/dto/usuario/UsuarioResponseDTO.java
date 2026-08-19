@@ -18,6 +18,8 @@ public class UsuarioResponseDTO {
     private String email;
     private String telefone;
     private String numeroCNS;
+    private String rg;
+    private String nis;
     private Boolean statusVerificacao;
     private PerfilUsuario role;
     private LocalDateTime createdAt;

@@ -18,6 +18,7 @@ public class SolicitacaoResponseDTO {
     private Long id;
     private String protocolo;
     private StatusSolicitacao status;
+    private String statusDescricao;
     private String cep;
     private String endereco;
     private String complemento;

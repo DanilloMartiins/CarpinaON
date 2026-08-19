@@ -1,5 +1,6 @@
 package com.carpinaon.controller;
 
+import com.carpinaon.dto.categoria.CategoriaComServicosDTO;
 import com.carpinaon.dto.categoria.CategoriaResponseDTO;
 import com.carpinaon.service.CategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,12 @@ public class CategoriaController {
     @GetMapping
     public ResponseEntity<List<CategoriaResponseDTO>> listar() {
         return ResponseEntity.ok(categoriaService.listar());
+    }
+
+    // GET /api/v1/categorias/servicos - categorias com serviços dentro (home do app)
+    @GetMapping("/servicos")
+    public ResponseEntity<List<CategoriaComServicosDTO>> listarComServicos() {
+        return ResponseEntity.ok(categoriaService.listarComServicos());
     }
 
     // GET /api/v1/categorias/{id}

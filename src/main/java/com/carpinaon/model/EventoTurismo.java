@@ -31,6 +31,12 @@ public class EventoTurismo {
     // Local do evento (texto livre ou referência)
     private String local;
 
+    // URL da imagem de divulgação (opcional)
+    private String imagemUrl;
+
+    // Nota do ponto turístico (opcional, 0 a 5)
+    private Double rating;
+
     // Construtor padrão
     public EventoTurismo() {
     }
@@ -101,5 +107,21 @@ public class EventoTurismo {
 
     public void setLocal(String local) {
         this.local = local;
+    }
+
+    public String getImagemUrl() {
+        return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagemUrl) {
+        this.imagemUrl = imagemUrl;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
     }
 }

@@ -27,4 +27,8 @@ public class EventoTurismoRequestDTO {
     private LocalDateTime dataFim;
 
     private String local;
+
+    private String imagemUrl;
+
+    private Double rating;
 }
