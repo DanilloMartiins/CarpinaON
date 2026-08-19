@@ -6,25 +6,35 @@ import com.carpinaon.dto.servico.ServicoResponseDTO;
 import com.carpinaon.dto.usuario.UsuarioResponseDTO;
 import com.carpinaon.dto.solicitacao.AnexoResponseDTO;
 import com.carpinaon.dto.solicitacao.HistoricoStatusResponseDTO;
+import com.carpinaon.dto.solicitacao.SolicitacaoAdminResumoDTO;
 import com.carpinaon.dto.solicitacao.SolicitacaoRequestDTO;
 import com.carpinaon.dto.solicitacao.SolicitacaoResumidoDTO;
 import com.carpinaon.dto.solicitacao.SolicitacaoResponseDTO;
 import com.carpinaon.model.Anexo;
 import com.carpinaon.model.HistoricoStatus;
+import com.carpinaon.model.Notificacao;
 import com.carpinaon.model.Servico;
 import com.carpinaon.model.Solicitacao;
 import com.carpinaon.model.Usuario;
 import com.carpinaon.model.enums.StatusSolicitacao;
 import com.carpinaon.repository.AnexoRepository;
 import com.carpinaon.repository.HistoricoStatusRepository;
+import com.carpinaon.repository.NotificacaoRepository;
 import com.carpinaon.repository.ServicoRepository;
 import com.carpinaon.repository.SolicitacaoRepository;
 import com.carpinaon.repository.UsuarioRepository;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,6 +56,9 @@ public class SolicitacaoService {
 
     @Autowired
     private HistoricoStatusRepository historicoStatusRepository;
+
+    @Autowired
+    private NotificacaoRepository notificacaoRepository;
 
     // Criar nova solicitação
     @Transactional
@@ -108,6 +121,61 @@ public class SolicitacaoService {
                 .toList();
     }
 
+    // Listar todas as solicitações (admin) com paginação e filtros
+    public Page<SolicitacaoAdminResumoDTO> listarAdmin(StatusSolicitacao status, LocalDate dataInicio,
+                                                       LocalDate dataFim, String termo, Pageable pageable) {
+        Specification<Solicitacao> spec = montarFiltro(status, dataInicio, dataFim, termo);
+        return solicitacaoRepository.findAll(spec, pageable).map(this::toAdminResumo);
+    }
+
+    // Buscar solicitação por id (admin)
+    public SolicitacaoResponseDTO buscarPorId(Long id) {
+        Solicitacao solicitacao = solicitacaoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solicitação não encontrada"));
+        return toResponse(solicitacao);
+    }
+
+    // Monta o filtro dinâmico da listagem admin
+    private Specification<Solicitacao> montarFiltro(StatusSolicitacao status, LocalDate dataInicio,
+                                                    LocalDate dataFim, String termo) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (status != null) {
+                predicates.add(cb.equal(root.get("status"), status));
+            }
+
+            if (dataInicio != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("createdAt"), dataInicio.atStartOfDay()));
+            }
+
+            if (dataFim != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), dataFim.atTime(LocalTime.MAX)));
+            }
+
+            if (termo != null && !termo.isBlank()) {
+                String termoLike = "%" + termo.trim().toUpperCase() + "%";
+                predicates.add(cb.like(cb.upper(root.get("protocolo")), termoLike));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    // Converte entidade pra DTO resumido da listagem admin
+    private SolicitacaoAdminResumoDTO toAdminResumo(Solicitacao solicitacao) {
+        return new SolicitacaoAdminResumoDTO(
+                solicitacao.getId(),
+                solicitacao.getProtocolo(),
+                solicitacao.getStatus(),
+                solicitacao.getStatus().getDescricao(),
+                solicitacao.getUsuario().getNome(),
+                solicitacao.getServico().getNome(),
+                solicitacao.getEndereco(),
+                solicitacao.getCreatedAt()
+        );
+    }
+
     // Atualizar status da solicitação (admin)
     @Transactional
     public SolicitacaoResponseDTO atualizarStatus(Long id, StatusSolicitacao novoStatus,
@@ -131,6 +199,14 @@ public class SolicitacaoService {
                 novoStatus,
                 observacao,
                 changedBy
+        ));
+
+        // Manda notificação pro cidadão sobre a mudança de status
+        notificacaoRepository.save(new Notificacao(
+                solicitacao.getUsuario(),
+                "Atualização do protocolo " + solicitacao.getProtocolo(),
+                "Sua solicitação " + solicitacao.getProtocolo() + " mudou de "
+                        + statusAnterior.getDescricao() + " para " + novoStatus.getDescricao() + "."
         ));
 
         return toResponse(solicitacao);

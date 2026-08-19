@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,8 +53,9 @@ public class SolicitacaoController {
         return ResponseEntity.ok(solicitacaoService.buscarPorProtocolo(protocolo));
     }
 
-    // PATCH /api/v1/solicitacoes/{id}/status - atualiza status (admin)
+    // PATCH /api/v1/solicitacoes/{id}/status - atualiza status (só admin)
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SolicitacaoResponseDTO> atualizarStatus(
             @PathVariable Long id,
             @RequestHeader(value = "Authorization") String authorization,

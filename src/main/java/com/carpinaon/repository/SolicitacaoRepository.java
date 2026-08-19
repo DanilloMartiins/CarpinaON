@@ -3,13 +3,14 @@ package com.carpinaon.repository;
 import com.carpinaon.model.Solicitacao;
 import com.carpinaon.model.enums.StatusSolicitacao;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> {
+public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long>, JpaSpecificationExecutor<Solicitacao> {
 
     List<Solicitacao> findByUsuarioIdOrderByCreatedAtDesc(Long usuarioId);
 
