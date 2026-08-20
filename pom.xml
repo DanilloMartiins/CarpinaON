@@ -99,6 +99,13 @@
             <version>2.5.0</version>
         </dependency>
 
+        <!-- AWS SDK S3 (compatível com Cloudflare R2) - upload de anexos -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.25.30</version>
+        </dependency>
+
         <!-- Testes -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

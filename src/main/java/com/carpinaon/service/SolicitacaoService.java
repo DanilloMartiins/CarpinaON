@@ -243,7 +243,7 @@ public class SolicitacaoService {
     private SolicitacaoResponseDTO toResponse(Solicitacao solicitacao) {
         List<AnexoResponseDTO> anexos = anexoRepository.findBySolicitacaoId(solicitacao.getId())
                 .stream()
-                .map(this::toAnexoResponse)
+                .map(this::converterAnexo)
                 .toList();
 
         List<HistoricoStatusResponseDTO> historico = historicoStatusRepository
@@ -309,12 +309,17 @@ public class SolicitacaoService {
         );
     }
 
-    // Converte anexo pra DTO
-    private AnexoResponseDTO toAnexoResponse(Anexo anexo) {
+    // Converte anexo pra DTO (com url do download autenticado)
+    public AnexoResponseDTO converterAnexo(Anexo anexo) {
+        String urlDownload = "/api/v1/solicitacoes/" + anexo.getSolicitacao().getId()
+                + "/anexos/" + anexo.getId() + "/arquivo";
         return new AnexoResponseDTO(
                 anexo.getId(),
                 anexo.getUrlArquivo(),
+                anexo.getNomeArquivo(),
                 anexo.getTipoMime(),
+                anexo.getTamanho(),
+                urlDownload,
                 anexo.getCreatedAt()
         );
     }

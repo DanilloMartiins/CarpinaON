@@ -37,6 +37,9 @@ Thumbs.db
 # Arquivos sensíveis (não commitar!)
 config_banco.txt
 
+# Dados mockados do Flutter (fonte temporária pro seed, não commitar)
+mock_data.dart
+
 # Ambiente e secrets (.env real fica de fora, só o .env.example de exemplo sobe)
 .env
 .env.*

@@ -21,9 +21,15 @@ public class Anexo {
     @Column(nullable = false)
     private String urlArquivo;
 
+    // Nome original do arquivo enviado pelo cidadão (pro usuário reconhecer)
+    private String nomeArquivo;
+
     // Tipo do arquivo (image/jpeg, application/pdf, etc)
     @Column(nullable = false)
     private String tipoMime;
+
+    // Tamanho do arquivo em bytes
+    private Long tamanho;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -33,10 +39,12 @@ public class Anexo {
     }
 
     // Construtor pra criar anexo novo
-    public Anexo(Solicitacao solicitacao, String urlArquivo, String tipoMime) {
+    public Anexo(Solicitacao solicitacao, String urlArquivo, String nomeArquivo, String tipoMime, Long tamanho) {
         this.solicitacao = solicitacao;
         this.urlArquivo = urlArquivo;
+        this.nomeArquivo = nomeArquivo;
         this.tipoMime = tipoMime;
+        this.tamanho = tamanho;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -71,6 +79,22 @@ public class Anexo {
 
     public void setTipoMime(String tipoMime) {
         this.tipoMime = tipoMime;
+    }
+
+    public String getNomeArquivo() {
+        return nomeArquivo;
+    }
+
+    public void setNomeArquivo(String nomeArquivo) {
+        this.nomeArquivo = nomeArquivo;
+    }
+
+    public Long getTamanho() {
+        return tamanho;
+    }
+
+    public void setTamanho(Long tamanho) {
+        this.tamanho = tamanho;
     }
 
     public LocalDateTime getCreatedAt() {

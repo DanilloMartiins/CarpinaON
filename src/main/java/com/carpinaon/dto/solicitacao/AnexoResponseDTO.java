@@ -13,6 +13,9 @@ public class AnexoResponseDTO {
 
     private Long id;
     private String urlArquivo;
+    private String nomeArquivo;
     private String tipoMime;
+    private Long tamanho;
+    private String urlDownload;
     private LocalDateTime createdAt;
 }
