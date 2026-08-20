@@ -24,6 +24,16 @@ services:
       - key: JWT_SECRET
         sync: false
 
+      # Cloudflare R2 (Object Storage dos anexos)
+      - key: R2_ENDPOINT
+        value: https://ac9a4c6d9d1208f981ed743c2382dbaf.r2.cloudflarestorage.com
+      - key: R2_BUCKET
+        value: carpinaon-anexos
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+
       # Pool pequeno pro Neon free não estourar conexões
       - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
         value: "10"
