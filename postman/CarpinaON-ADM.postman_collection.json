@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "carpinaon-adm-collection-2026",
 		"name": "CarpinaON - ADM",
-		"description": "API do CarpinaON - Área Administrativa (Servidor Público)\n\nBase: http://localhost:8080 (local) ou https://carpinaon-api.onrender.com (Render)\n\nUso: rode o request \"Login servidor\" primeiro para o token ser salvo automaticamente na variável {{token}}.\n\nIMPORTANTE: os endpoints de CRUD admin (categorias, serviços, eventos e gestão de solicitações) serão adicionados conforme forem implementados no backend. Por enquanto esta collection cobre a autenticação com perfil (role ADMIN/CIDADÃO).",
+		"description": "API do CarpinaON - Área Administrativa (Servidor Público)\n\nBase: http://localhost:8080 (local) ou https://carpinaon-api.onrender.com (Render)\n\nUso: rode o request \"Login servidor\" primeiro para o token ser salvo automaticamente na variável {{token}}.\n\nCRUD admin (categorias, serviços, eventos, gestão de solicitações, dashboard e anexos). Os IDs são salvos automaticamente ao criar/listar (categoriaId, servicoId, eventoId, solicitacaoId, anexoId).\n\nIMPORTANTE: os endpoints admin exigem perfil ADMIN (senão retorna 403).",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
@@ -14,6 +14,31 @@
 		{
 			"key": "token",
 			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "categoriaId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "servicoId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "eventoId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "solicitacaoId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "anexoId",
+			"value": "1",
 			"type": "string"
 		}
 	],
@@ -119,6 +144,586 @@
 							"path": ["api", "v1", "auth", "cadastrar"]
 						},
 						"description": "Todo cadastro pela API nasce com perfil CIDADÃO. Pra virar servidor (ADMIN), o perfil precisa ser alterado no banco (não existe endpoint público de promoção por segurança)."
+					}
+				}
+			]
+		},
+		{
+			"name": "Catálogo (Admin)",
+			"item": [
+				{
+					"name": "Criar categoria",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Cria categoria com 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"var json = pm.response.json();",
+									"if (json.id) {",
+									"    pm.collectionVariables.set('categoriaId', json.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Categoria Exemplo\",\n    \"descricao\": \"Descrição da categoria criada pelo servidor.\",\n    \"icone\": \"cleaning_services\",\n    \"cor\": \"#EA580C\",\n    \"ativo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/categorias",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "categorias"]
+						},
+						"description": "Cria categoria nova. Salva o id retornado na variável {{categoriaId}}."
+					}
+				},
+				{
+					"name": "Listar categorias",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Lista categorias com 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/categorias",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "categorias"]
+						},
+						"description": "Lista as categorias ativas (mesmo endpoint que o app cidadão usa)."
+					}
+				},
+				{
+					"name": "Atualizar categoria",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Categoria Exemplo Editada\",\n    \"descricao\": \"Descrição editada.\",\n    \"icone\": \"cleaning_services\",\n    \"cor\": \"#EA580C\",\n    \"ativo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/categorias/{{categoriaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "categorias", "{{categoriaId}}"]
+						},
+						"description": "Atualiza a categoria da variável {{categoriaId}}."
+					}
+				},
+				{
+					"name": "Deletar categoria (soft)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/categorias/{{categoriaId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "categorias", "{{categoriaId}}"]
+						},
+						"description": "Delete lógico (ativo = false): a categoria some da listagem pública, mas o registro fica no banco."
+					}
+				},
+				{
+					"name": "Criar serviço",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Cria serviço com 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"var json = pm.response.json();",
+									"if (json.id) {",
+									"    pm.collectionVariables.set('servicoId', json.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categoriaId\": {{categoriaId}},\n    \"nome\": \"Serviço Exemplo\",\n    \"descricao\": \"Descrição do serviço de exemplo.\",\n    \"quandoUsar\": \"Use para testar a criação de serviço.\",\n    \"naoUsarPara\": \"Não use para nada sério.\",\n    \"requerEndereco\": true,\n    \"formType\": \"form_light_repair\",\n    \"estimatedDays\": 3,\n    \"requiredDocuments\": [\"Foto do Local\"],\n    \"ativo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/servicos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "servicos"]
+						},
+						"description": "Cria serviço dentro da categoria {{categoriaId}}. Salva o id em {{servicoId}}."
+					}
+				},
+				{
+					"name": "Listar serviços",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/servicos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "servicos"]
+						},
+						"description": "Lista os serviços ativos (mesmo endpoint do app cidadão)."
+					}
+				},
+				{
+					"name": "Atualizar serviço",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categoriaId\": {{categoriaId}},\n    \"nome\": \"Serviço Exemplo Editado\",\n    \"descricao\": \"Descrição editada.\",\n    \"quandoUsar\": \"Use para testar a edição.\",\n    \"naoUsarPara\": \"Não use.\",\n    \"requerEndereco\": true,\n    \"formType\": \"form_light_repair\",\n    \"estimatedDays\": 5,\n    \"requiredDocuments\": [\"Foto do Local\"],\n    \"ativo\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/servicos/{{servicoId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "servicos", "{{servicoId}}"]
+						},
+						"description": "Atualiza o serviço da variável {{servicoId}}."
+					}
+				},
+				{
+					"name": "Deletar serviço (soft)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/servicos/{{servicoId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "servicos", "{{servicoId}}"]
+						},
+						"description": "Delete lógico (ativo = false): some da listagem pública, mas fica no banco."
+					}
+				},
+				{
+					"name": "Criar evento",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Cria evento com 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"var json = pm.response.json();",
+									"if (json.id) {",
+									"    pm.collectionVariables.set('eventoId', json.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titulo\": \"Evento de Teste\",\n    \"descricao\": \"Descrição do evento de exemplo.\",\n    \"categoria\": \"Cultura Popular\",\n    \"dataInicio\": \"2026-09-01T09:00:00\",\n    \"dataFim\": \"2026-09-01T18:00:00\",\n    \"local\": \"Praça Central\",\n    \"imagemUrl\": \"https://via.placeholder.com/800x500.png\",\n    \"rating\": 4.5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/eventos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "eventos"]
+						},
+						"description": "Cria evento de turismo. Salva o id em {{eventoId}}."
+					}
+				},
+				{
+					"name": "Listar eventos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/eventos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "eventos"]
+						},
+						"description": "Lista os eventos (mesmo endpoint do app cidadão)."
+					}
+				},
+				{
+					"name": "Atualizar evento",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"titulo\": \"Evento de Teste Editado\",\n    \"descricao\": \"Descrição editada.\",\n    \"categoria\": \"Cultura Popular\",\n    \"dataInicio\": \"2026-09-01T09:00:00\",\n    \"dataFim\": \"2026-09-01T18:00:00\",\n    \"local\": \"Praça Central\",\n    \"imagemUrl\": \"https://via.placeholder.com/800x500.png\",\n    \"rating\": 4.6\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/eventos/{{eventoId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "eventos", "{{eventoId}}"]
+						},
+						"description": "Atualiza o evento da variável {{eventoId}}."
+					}
+				},
+				{
+					"name": "Deletar evento",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/eventos/{{eventoId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "eventos", "{{eventoId}}"]
+						},
+						"description": "Delete físico do evento (diferente de categoria/serviço, aqui apaga mesmo)."
+					}
+				}
+			]
+		},
+		{
+			"name": "Solicitações (Admin)",
+			"item": [
+				{
+					"name": "Listar solicitações",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Lista solicitações com 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var json = pm.response.json();",
+									"if (json.content && json.content.length > 0) {",
+									"    pm.collectionVariables.set('solicitacaoId', json.content[0].id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/solicitacoes?size=10&sort=createdAt,desc",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "solicitacoes"],
+							"query": [
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "sort",
+									"value": "createdAt,desc"
+								}
+							]
+						},
+						"description": "Lista todas as solicitações (paginado). Filtros opcionais: ?status=EM_ANDAMENTO, ?dataInicio=2026-08-01, ?dataFim=2026-08-31, ?termo=2026-XXXX. Salva o primeiro id em {{solicitacaoId}}."
+					}
+				},
+				{
+					"name": "Detalhe da solicitação",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/solicitacoes/{{solicitacaoId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "solicitacoes", "{{solicitacaoId}}"]
+						},
+						"description": "Detalhe completo: dados do cidadão, serviço, anexos e histórico de status."
+					}
+				},
+				{
+					"name": "Atualizar status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Atualiza status com 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"EM_ANALISE\",\n    \"observacao\": \"Em análise pela equipe.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/solicitacoes/{{solicitacaoId}}/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "solicitacoes", "{{solicitacaoId}}", "status"]
+						},
+						"description": "Muda o status da solicitação e dispara notificação automática pro cidadão. Status possíveis: RECEBIDA, EM_ANALISE, EM_ANDAMENTO, RESOLVIDA, INDEFERIDA, CANCELADA. INDEFERIDA exige observação."
+					}
+				}
+			]
+		},
+		{
+			"name": "Dashboard (Admin)",
+			"item": [
+				{
+					"name": "Resumo do dashboard",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Dashboard retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/dashboard",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "dashboard"]
+						},
+						"description": "Contadores: total de solicitações, novas hoje, total de cidadãos e distribuição por status."
+					}
+				}
+			]
+		},
+		{
+			"name": "Anexos",
+			"item": [
+				{
+					"name": "Upload de anexo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Upload retorna 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"var json = pm.response.json();",
+									"if (json.id) {",
+									"    pm.collectionVariables.set('anexoId', json.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "arquivo",
+									"type": "file",
+									"src": ["C:\\Users\\SeuUsuario\\Desktop\\foto.png"]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/solicitacoes/{{solicitacaoId}}/anexos",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "solicitacoes", "{{solicitacaoId}}", "anexos"]
+						},
+						"description": "Envia arquivo (JPG, PNG ou PDF, máx 5MB) pra solicitação {{solicitacaoId}}. Ajuste o caminho do arquivo no campo \"arquivo\" antes de rodar. Salva o id em {{anexoId}}."
+					}
+				},
+				{
+					"name": "Download de anexo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Download retorna 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/solicitacoes/{{solicitacaoId}}/anexos/{{anexoId}}/arquivo",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "solicitacoes", "{{solicitacaoId}}", "anexos", "{{anexoId}}", "arquivo"]
+						},
+						"description": "Baixa o arquivo do anexo {{anexoId}} (stream autenticado do R2)."
 					}
 				}
 			]

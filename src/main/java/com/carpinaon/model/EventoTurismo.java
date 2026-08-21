@@ -37,6 +37,13 @@ public class EventoTurismo {
     // Nota do ponto turístico (opcional, 0 a 5)
     private Double rating;
 
+    // Quando foi criado e quando foi alterado pela última vez
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
     // Construtor padrão
     public EventoTurismo() {
     }
@@ -123,5 +130,32 @@ public class EventoTurismo {
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

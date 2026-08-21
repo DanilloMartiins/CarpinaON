@@ -100,7 +100,7 @@ public class SolicitacaoService {
                 null,
                 StatusSolicitacao.RECEBIDA,
                 "Solicitação criada pelo cidadão",
-                usuarioId
+                usuario
         ));
 
         return toResponse(solicitacao);
@@ -193,17 +193,22 @@ public class SolicitacaoService {
         solicitacao.setStatus(novoStatus);
         solicitacaoRepository.save(solicitacao);
 
+        // Busca quem mudou o status (pro histórico guardar o usuário completo)
+        Usuario usuarioLogado = usuarioRepository.findById(changedBy)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
         historicoStatusRepository.save(new HistoricoStatus(
                 solicitacao,
                 statusAnterior,
                 novoStatus,
                 observacao,
-                changedBy
+                usuarioLogado
         ));
 
         // Manda notificação pro cidadão sobre a mudança de status
         notificacaoRepository.save(new Notificacao(
                 solicitacao.getUsuario(),
+                solicitacao,
                 "Atualização do protocolo " + solicitacao.getProtocolo(),
                 "Sua solicitação " + solicitacao.getProtocolo() + " mudou de "
                         + statusAnterior.getDescricao() + " para " + novoStatus.getDescricao() + "."
@@ -287,7 +292,9 @@ public class SolicitacaoService {
                 servico.getFormType(),
                 servico.getEstimatedDays(),
                 servico.getRequiredDocuments(),
-                categoria
+                categoria,
+                servico.getCreatedAt(),
+                servico.getUpdatedAt()
         );
 
         return new SolicitacaoResponseDTO(

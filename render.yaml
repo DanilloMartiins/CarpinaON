@@ -12,6 +12,10 @@ services:
     healthCheckPath: /actuator/health
     plan: free
     envVars:
+      # Profile de produção (banco/Neon, logs limpos)
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+
       # Neon (Postgres serverless). Banco: neondb
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://ep-polished-unit-afua843w.c-2.us-west-2.aws.neon.tech:5432/neondb?sslmode=require
@@ -32,6 +36,10 @@ services:
       - key: R2_ACCESS_KEY_ID
         sync: false
       - key: R2_SECRET_ACCESS_KEY
+        sync: false
+
+      # Google Places API (buscar Place ID dos eventos)
+      - key: GOOGLE_PLACES_API_KEY
         sync: false
 
       # Pool pequeno pro Neon free não estourar conexões

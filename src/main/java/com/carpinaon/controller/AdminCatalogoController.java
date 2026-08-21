@@ -8,6 +8,7 @@ import com.carpinaon.dto.turismo.EventoTurismoRequestDTO;
 import com.carpinaon.dto.turismo.EventoTurismoResponseDTO;
 import com.carpinaon.service.CategoriaService;
 import com.carpinaon.service.EventoTurismoService;
+import com.carpinaon.service.GooglePlacesService;
 import com.carpinaon.service.ServicoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class AdminCatalogoController {
 
     @Autowired
     private EventoTurismoService eventoTurismoService;
+
+    @Autowired
+    private GooglePlacesService googlePlacesService;
 
     // ================= CATEGORIAS =================
 
@@ -92,5 +96,26 @@ public class AdminCatalogoController {
     public ResponseEntity<Void> deletarEvento(@PathVariable Long id) {
         eventoTurismoService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // POST /api/v1/admin/eventos/buscar-place-id - busca Place ID do Google pelo endereço
+    @PostMapping("/eventos/buscar-place-id")
+    public ResponseEntity<GooglePlacesService.PlaceIdResponse> buscarPlaceId(@RequestBody BuscarPlaceIdRequest request) {
+        if (request == null || request.getEndereco() == null || request.getEndereco().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        GooglePlacesService.PlaceIdResponse resultado = googlePlacesService.buscarPlaceId(request.getEndereco());
+        if (resultado == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(resultado);
+    }
+
+    // Request interno pro endpoint de buscar Place ID
+    public static class BuscarPlaceIdRequest {
+        private String endereco;
+
+        public String getEndereco() { return endereco; }
+        public void setEndereco(String endereco) { this.endereco = endereco; }
     }
 }

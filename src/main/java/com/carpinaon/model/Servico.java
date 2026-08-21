@@ -1,6 +1,7 @@
 package com.carpinaon.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +52,13 @@ public class Servico {
     @CollectionTable(name = "servico_documentos", joinColumns = @JoinColumn(name = "servico_id"))
     @Column(name = "documento")
     private List<String> requiredDocuments = new ArrayList<>();
+
+    // Quando foi criado e quando foi alterado pela última vez
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
     // Construtor padrão
     public Servico() {
@@ -155,5 +163,32 @@ public class Servico {
 
     public void setRequiredDocuments(List<String> requiredDocuments) {
         this.requiredDocuments = requiredDocuments;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

@@ -32,9 +32,10 @@ public class HistoricoStatus {
     @Column(columnDefinition = "TEXT")
     private String observacao;
 
-    // Quem mudou o status (ID do usuário ou admin)
-    @Column(nullable = false)
-    private Long changedBy;
+    // Quem mudou o status (usuário ou admin)
+    @ManyToOne
+    @JoinColumn(name = "changed_by", nullable = false)
+    private Usuario changedByUsuario;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime changedAt;
@@ -45,12 +46,12 @@ public class HistoricoStatus {
 
     // Construtor pra registrar mudança de status
     public HistoricoStatus(Solicitacao solicitacao, StatusSolicitacao statusAnterior,
-                           StatusSolicitacao statusNovo, String observacao, Long changedBy) {
+                           StatusSolicitacao statusNovo, String observacao, Usuario changedByUsuario) {
         this.solicitacao = solicitacao;
         this.statusAnterior = statusAnterior;
         this.statusNovo = statusNovo;
         this.observacao = observacao;
-        this.changedBy = changedBy;
+        this.changedByUsuario = changedByUsuario;
         this.changedAt = LocalDateTime.now();
     }
 
@@ -95,12 +96,17 @@ public class HistoricoStatus {
         this.observacao = observacao;
     }
 
+    // Mantém o getter do id pra não quebrar o DTO (o app só usa o id mesmo)
     public Long getChangedBy() {
-        return changedBy;
+        return changedByUsuario != null ? changedByUsuario.getId() : null;
     }
 
-    public void setChangedBy(Long changedBy) {
-        this.changedBy = changedBy;
+    public Usuario getChangedByUsuario() {
+        return changedByUsuario;
+    }
+
+    public void setChangedByUsuario(Usuario changedByUsuario) {
+        this.changedByUsuario = changedByUsuario;
     }
 
     public LocalDateTime getChangedAt() {

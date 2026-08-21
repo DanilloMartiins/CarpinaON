@@ -89,7 +89,9 @@ public class EventoTurismoService {
                 evento.getDataFim(),
                 evento.getLocal(),
                 evento.getImagemUrl(),
-                evento.getRating()
+                evento.getRating(),
+                evento.getCreatedAt(),
+                evento.getUpdatedAt()
         );
     }
 }

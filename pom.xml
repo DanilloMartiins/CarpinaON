@@ -106,6 +106,12 @@
             <version>2.25.30</version>
         </dependency>
 
+        <!-- WebFlux (WebClient pro Google Places API) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
         <!-- Testes -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

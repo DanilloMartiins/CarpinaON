@@ -15,5 +15,7 @@ public class NotificacaoResponseDTO {
     private String titulo;
     private String mensagem;
     private Boolean lida;
+    // Protocolo da solicitação quando a notificação nasce de uma mudança de status
+    private String protocoloSolicitacao;
     private LocalDateTime createdAt;
 }

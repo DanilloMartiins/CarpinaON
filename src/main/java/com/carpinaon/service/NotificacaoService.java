@@ -44,11 +44,15 @@ public class NotificacaoService {
 
     // Converte entidade pra DTO de resposta
     private NotificacaoResponseDTO toResponse(Notificacao notificacao) {
+        String protocolo = notificacao.getSolicitacao() != null
+                ? notificacao.getSolicitacao().getProtocolo()
+                : null;
         return new NotificacaoResponseDTO(
                 notificacao.getId(),
                 notificacao.getTitulo(),
                 notificacao.getMensagem(),
                 notificacao.getLida(),
+                protocolo,
                 notificacao.getCreatedAt()
         );
     }

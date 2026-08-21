@@ -128,7 +128,9 @@ public class ServicoService {
                 servico.getFormType(),
                 servico.getEstimatedDays(),
                 servico.getRequiredDocuments(),
-                categoria
+                categoria,
+                servico.getCreatedAt(),
+                servico.getUpdatedAt()
         );
     }
 }

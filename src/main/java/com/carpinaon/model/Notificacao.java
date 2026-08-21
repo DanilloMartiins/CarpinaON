@@ -17,6 +17,11 @@ public class Notificacao {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
+    // Quando a notificação nasce de uma solicitação (ex: mudança de status), guarda o vínculo
+    @ManyToOne
+    @JoinColumn(name = "solicitacao_id")
+    private Solicitacao solicitacao;
+
     @Column(nullable = false)
     private String titulo;
 
@@ -43,6 +48,12 @@ public class Notificacao {
         this.createdAt = LocalDateTime.now();
     }
 
+    // Construtor com vínculo na solicitação (usado quando o status muda)
+    public Notificacao(Usuario usuario, Solicitacao solicitacao, String titulo, String mensagem) {
+        this(usuario, titulo, mensagem);
+        this.solicitacao = solicitacao;
+    }
+
     // Getters e Setters
     public Long getId() {
         return id;
@@ -58,6 +69,14 @@ public class Notificacao {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Solicitacao getSolicitacao() {
+        return solicitacao;
+    }
+
+    public void setSolicitacao(Solicitacao solicitacao) {
+        this.solicitacao = solicitacao;
     }
 
     public String getTitulo() {

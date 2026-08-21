@@ -1,6 +1,7 @@
 package com.carpinaon.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 // Categoria de serviços (ex: Saúde, Educação, Infraestrutura)
 @Entity
@@ -25,6 +26,13 @@ public class Categoria {
     // Se a categoria tá ativa ou não (pode esconder sem apagar)
     @Column(nullable = false)
     private Boolean ativo = true;
+
+    // Quando foi criada e quando foi alterada pela última vez
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
     // Construtor padrão
     public Categoria() {
@@ -85,5 +93,32 @@ public class Categoria {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

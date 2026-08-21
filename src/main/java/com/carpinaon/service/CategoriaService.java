@@ -97,7 +97,9 @@ public class CategoriaService {
                 categoria.getDescricao(),
                 categoria.getIcone(),
                 categoria.getCor(),
-                categoria.getAtivo()
+                categoria.getAtivo(),
+                categoria.getCreatedAt(),
+                categoria.getUpdatedAt()
         );
     }
 }
