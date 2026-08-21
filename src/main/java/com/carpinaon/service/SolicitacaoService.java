@@ -185,7 +185,7 @@ public class SolicitacaoService {
 
         StatusSolicitacao statusAnterior = solicitacao.getStatus();
 
-        // Se for indeferir, exige observação (padrão de boa prática)
+        // Indeferir sem observação não pode (o cidadão precisa saber o motivo)
         if (novoStatus == StatusSolicitacao.INDEFERIDA && (observacao == null || observacao.isBlank())) {
             throw new RuntimeException("Observação é obrigatória para indeferir uma solicitação");
         }

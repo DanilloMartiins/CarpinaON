@@ -67,8 +67,6 @@ public class Usuario {
     }
 
     // Getters e Setters
-    // Não usei Lombok pra ficar explícito o que cada coisa faz
-
     public Long getId() {
         return id;
     }

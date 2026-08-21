@@ -1,10 +1,12 @@
 package com.carpinaon.service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import java.util.List;
 import reactor.core.publisher.Mono;
 
 // Service pra buscar Place ID no Google Places API (Find Place from Text)
@@ -36,12 +38,12 @@ public class GooglePlacesService {
                     .bodyToMono(GooglePlacesResponse.class)
                     .block();
 
-            if (response != null && response.getCandidates() != null && !response.getCandidates().isEmpty()) {
-                GooglePlacesResponse.Candidate primeiro = response.getCandidates().get(0);
+            if (response != null && response.candidates() != null && !response.candidates().isEmpty()) {
+                GooglePlacesResponse.Candidate primeiro = response.candidates().get(0);
                 return new PlaceIdResponse(
-                        primeiro.getPlaceId(),
-                        primeiro.getName(),
-                        primeiro.getFormattedAddress()
+                        primeiro.placeId(),
+                        primeiro.name(),
+                        primeiro.formattedAddress()
                 );
             }
             return null; // não achou
@@ -52,28 +54,10 @@ public class GooglePlacesService {
         }
     }
 
-    // Response do Google Places API
-    public static class GooglePlacesResponse {
-        private java.util.List<Candidate> candidates;
-        private String status;
-
-        public java.util.List<Candidate> getCandidates() { return candidates; }
-        public void setCandidates(java.util.List<Candidate> candidates) { this.candidates = candidates; }
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
-
-        public static class Candidate {
-            private String placeId;
-            private String name;
-            private String formattedAddress;
-
-            public String getPlaceId() { return placeId; }
-            public void setPlaceId(String placeId) { this.placeId = placeId; }
-            public String getName() { return name; }
-            public void setName(String name) { this.name = name; }
-            public String getFormattedAddress() { return formattedAddress; }
-            public void setFormattedAddress(String formattedAddress) { this.formattedAddress = formattedAddress; }
-        }
+    // Response do Google Places API (só os campos que a gente usa)
+    public record GooglePlacesResponse(List<Candidate> candidates, String status) {
+        public record Candidate(String placeId, String name,
+                                @JsonProperty("formatted_address") String formattedAddress) {}
     }
 
     // Resposta pro controller

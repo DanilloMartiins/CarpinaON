@@ -24,10 +24,8 @@ public class UsuarioRequestDTO {
     private String telefone;
 
     // Opcional - cidadão pode cadastrar depois
-    // TODO (Flutter): Mostrar tooltip ao lado do campo com a mensagem:
-    // "Seu Cartão Nacional de Saúde (CNS) é o número da sua carteirinha do SUS.
-    //  Você encontra ele no app Meu SUS Digital, na impressão do cartão,
-    //  ou na UBS do seu bairro."
+    // (Flutter: mostrar tooltip explicando que o CNS é o número da carteirinha do SUS,
+    //  dá pra achar no app Meu SUS Digital ou na UBS do bairro)
     private String numeroCNS;
 
     // Opcional - RG do cidadão (mostra no perfil)

@@ -101,10 +101,10 @@ public class AdminCatalogoController {
     // POST /api/v1/admin/eventos/buscar-place-id - busca Place ID do Google pelo endereço
     @PostMapping("/eventos/buscar-place-id")
     public ResponseEntity<GooglePlacesService.PlaceIdResponse> buscarPlaceId(@RequestBody BuscarPlaceIdRequest request) {
-        if (request == null || request.getEndereco() == null || request.getEndereco().isBlank()) {
+        if (request == null || request.endereco() == null || request.endereco().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        GooglePlacesService.PlaceIdResponse resultado = googlePlacesService.buscarPlaceId(request.getEndereco());
+        GooglePlacesService.PlaceIdResponse resultado = googlePlacesService.buscarPlaceId(request.endereco());
         if (resultado == null) {
             return ResponseEntity.notFound().build();
         }
@@ -112,10 +112,5 @@ public class AdminCatalogoController {
     }
 
     // Request interno pro endpoint de buscar Place ID
-    public static class BuscarPlaceIdRequest {
-        private String endereco;
-
-        public String getEndereco() { return endereco; }
-        public void setEndereco(String endereco) { this.endereco = endereco; }
-    }
+    public record BuscarPlaceIdRequest(String endereco) {}
 }

@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import jakarta.servlet.http.HttpServletResponse;
 
-// Configuração de segurança - por enquanto só libera tudo
+// Configuração de segurança - JWT stateless + rate limit na frente de tudo
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
